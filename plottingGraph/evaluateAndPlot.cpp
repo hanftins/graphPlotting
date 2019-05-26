@@ -1,14 +1,6 @@
 ﻿#include "evaluateAndPlot.h"
 
-double eval(string f, double x) {
-	if (f == "sin(x)")
-		return sin(x);
-	if (f == "cos(x)")
-		return cos(x);
-	if (f == "tan(x)")
-		return tan(x);
-	if (f == "cot(x)")
-		return 1 / tan(x);
+double eval(string f, double x) {	//Hàm tính giá trị hàm số, sử dụng stack và thuật toán Ký pháp Ba Lan 
 	if (f == "e^x")
 		return exp(x);
 	string numStr;
@@ -73,104 +65,81 @@ double eval(string f, double x) {
 	return topStack(stackNumber);
 }
 
-bool stop[2] = { false, false };
-bool duplicateColor[600][400] = {0};
-COLORREF recColor = whiteColor;
-COLORREF gridColor = greyColor;
-HWND consoleWindow = GetConsoleWindow();
-int recXstart = 50;						//
-int recYstart = 40;						//	Tọa độ đỉnh hình chữ nhật
-int recXend = 650;						//
-int recYend = 440;
-
-void drawHorizontal(double firstX, double lastX, double firstY, double lastY, double step) {				//	//	Cận Y
-	double spaceX = step;						//	Độ chia nhỏ nhất của trục X
-	double spaceY = step;
-	int length = recXend - recXstart;		//Chiều dài hình chữ nhật
-	int width = recYend - recYstart;		//Chiều rộng hình chữ nhật
-	double nX = (lastX - firstX) / spaceX;	//Số đoạn trên trục X
-	double nY = (lastY - firstY) / spaceY;	//Số đoạn trên trục Y
-	double spacePixelX = length / nX;		//Độ chia nhỏ nhất tính theo pixel của trục X
-	double spacePixelY = width / nY;
+void drawHorizontal(double firstX, double lastX, double firstY, double lastY, double step) {	//Hàm vẽ đường nằm ngang
+	double nX = (lastX - firstX) / step;	//Số đoạn trên trục Ox
+	double nY = (lastY - firstY) / step;	//Số đoạn trên trục Oy
+	double spacePixelX = length / nX;		//Độ chia nhỏ nhất trên trục Ox tính bằng pixel
+	double spacePixelY = width / nY;		//Độ chia nhỏ nhất trên trục Oy tính bằng pixel
 	HDC consoleDC = GetDC(consoleWindow);
-	while (!stop[0]) {
-		//Vẽ khung hình chữ nhật theo chiều ngang
-		for (int i = recXstart; i <= recXend; i++) {
-			SetPixel(consoleDC, i, recYstart, recColor);			//Vẽ cạnh trên
-			SetPixel(consoleDC, i, recYend, recColor);				//Vẽ cạnh dưới
-			if ((i - recXstart) % (int)spacePixelX == 0 && (i != recXstart) && (i != recXend)) 		//Kiểm tra xem tại pixel i có được chia đoạn hay không
-				for (int j = recYstart + 1; j < recYend; j++) {
-					if (duplicateColor[i - recXstart][j - recYstart] == 0)
+	while (!stop) 
+		for (int i = recXstart; i <= recXend; i++) {		//Vòng lặp chạy trên cạnh của hình chữ nhật
+			SetPixel(consoleDC, i, recYstart, recColor);	//Vẽ cạnh trên	
+			SetPixel(consoleDC, i, recYend, recColor);		//Vẽ cạnh dưới
+			if ((i - recXstart) % (int)spacePixelX == 0 && (i != recXstart) && (i != recXend)) 	//Kiểm tra tọa độ để vẽ lưới	
+				for (int j = recYstart + 1; j < recYend; j++) //Vẽ lưới theo chiều từ trên xuống dưới
+					if (duplicateColor[i - recXstart][j - recYstart] == 0) //Kiểm tra pixel đã được vẽ bằng hàm vẽ đồ thị chưa
 						SetPixel(consoleDC, i, j, gridColor);
-				}
 		}
-	}
 	ReleaseDC(consoleWindow, consoleDC);
 }
 
-void drawVertical(double firstX, double lastX, double firstY, double lastY, double step) {
-					//	//	Cận Y
-	double spaceX = step;						//	Độ chia nhỏ nhất của trục X
-	double spaceY = step;
-	int length = recXend - recXstart;		//Chiều dài hình chữ nhật
-	int width = recYend - recYstart;		//Chiều rộng hình chữ nhật
-	double nX = (lastX - firstX) / spaceX;	//Số đoạn trên trục X
-	double nY = (lastY - firstY) / spaceY;	//Số đoạn trên trục Y
-	double spacePixelX = length / nX;		//Độ chia nhỏ nhất tính theo pixel của trục X
+void drawVertical(double firstX, double lastX, double firstY, double lastY, double step) {	 //Tương tự như vẽ đường nằm ngang
+	double nX = (lastX - firstX) / step;	
+	double nY = (lastY - firstY) / step;	
+	double spacePixelX = length / nX;		
 	double spacePixelY = width / nY;
 	HDC consoleDC = GetDC(consoleWindow);
-	while (!stop[0]) {
+	while (!stop) {
 		for (int i = recYstart; i <= recYend; i++) {
-			SetPixel(consoleDC, recXstart, i, recColor);			//Vẽ cạnh trái
-			SetPixel(consoleDC, recXend, i, recColor);				//Vẽ cạnh phải
-			if ((i - recYstart) % (int)spacePixelY == 0 && (i != recYstart) && (i != recYend)) 			//Kiểm tra xem tại pixel i có được chia đoạn hay không
-				for (int j = recXstart + 1; j < recXend; j++) {
+			SetPixel(consoleDC, recXstart, i, recColor);		
+			SetPixel(consoleDC, recXend, i, recColor);				
+			if ((i - recYstart) % (int)spacePixelY == 0 && (i != recYstart) && (i != recYend)) 			
+				for (int j = recXstart + 1; j < recXend; j++) 
 					if (duplicateColor[j - recXstart][i - recYstart] == 0)
 						SetPixel(consoleDC, j, i, gridColor);
-				}
 		}
 	}
 	ReleaseDC(consoleWindow, consoleDC);
 }
 
-void labelling(string fs[], int n) {
+void labelling(string fs[], int n) { //Hàm xuất ra thông tin đồ thị
 	HANDLE hStdout;
 	COORD destCoord;
 	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-	int a[3] = {10, 11, 12};
-	//
-	destCoord.X = recXend / 8 + 4;
-	destCoord.Y = recYstart / 16;
-	SetConsoleCursorPosition(hStdout, destCoord);
-	cout << "FUNCTION(S):" << endl;
 	CONSOLE_SCREEN_BUFFER_INFO csInfo;
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csInfo);
-	WORD oldColor = csInfo.wAttributes;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csInfo); //Lấy thông tin console
+	WORD oldColor = csInfo.wAttributes; //Lưu màu cũ
+	int a[3] = {10, 11, 12};	//Mảng màu
+
+	//Phần in ra thông tin đồ thị
+	destCoord.X = recXend / 8 + 4;	//Vị trí thích hợp
+	destCoord.Y = recYstart / 16;	//
+	SetConsoleCursorPosition(hStdout, destCoord); //Đưa con trỏ tới vị trí thích hợp
+	cout << "HAM SO:" << endl;
 	for (int i = 0; i < n; i++) {
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), a[i]);
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), a[i]); //Đổi màu các ký tự tiếp theo
 		destCoord.Y += 2;
 		SetConsoleCursorPosition(hStdout, destCoord);
 		cout << "y = " << fs[i];
 	}
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), oldColor);
+
+	//Phần in ra hướng dẫn
 	destCoord.Y += 5;
 	SetConsoleCursorPosition(hStdout, destCoord);
-	cout << "INSTRUCTION:";
+	cout << "HUONG DAN:";
 	destCoord.Y += 2;
 	SetConsoleCursorPosition(hStdout, destCoord);
-	cout << "Press WSAD to move the graph(s)";
+	cout << "Nhan WSAD de di chuyen do thi";
 	destCoord.Y++;
 	SetConsoleCursorPosition(hStdout, destCoord);
-	cout << "Press +/- to Zoom-in/out";	
+	cout << "Nhan +/- de phong to/thu nho";	
 }
-void numberline(double firstX, double lastX, double firstY, double lastY, double step) {
-	double spaceX = step;						//	Độ chia nhỏ nhất của trục X
-	double spaceY = step;
-	int length = recXend - recXstart;		//Chiều dài hình chữ nhật
-	int width = recYend - recYstart;		//Chiều rộng hình chữ nhật
-	double nX = (lastX - firstX) / spaceX;	//Số đoạn trên trục X
-	double nY = (lastY - firstY) / spaceY;	//Số đoạn trên trục Y
-	double spacePixelX = length / nX;		//Độ chia nhỏ nhất tính theo pixel của trục X
+
+void numberline(double firstX, double lastX, double firstY, double lastY, double step) {	//Hàm đánh số trục số
+	double nX = (lastX - firstX) / step;
+	double nY = (lastY - firstY) / step;	
+	double spacePixelX = length / nX;		
 	double spacePixelY = width / nY;
 	HANDLE hStdout;
 	COORD destCoord;
@@ -184,10 +153,10 @@ void numberline(double firstX, double lastX, double firstY, double lastY, double
 				destCoord.X = recXstart / 8 - 4;
 			else
 				destCoord.X = recXstart / 8 - 5;
-			destCoord.Y = i / 16;						//Tính tọa độ con trỏ dựa vào vị trí pixel được chia đoạn
-			SetConsoleCursorPosition(hStdout, destCoord); //Di chuyển con trỏ đến vị trí cần thiết
-			cout << tempY;								//Đánh số
-			tempY -= spaceY;							//Do đánh số từ trên xuống và lúc đầu tempY = lastY nên mỗi lần lặp thì giảm tempY đi bằng độ chia nhỏ nhất
+			destCoord.Y = i / 16;							//Tính tọa độ con trỏ dựa vào vị trí pixel được chia đoạn
+			SetConsoleCursorPosition(hStdout, destCoord);	//Di chuyển con trỏ đến vị trí cần thiết
+			cout << tempY;									//Đánh số
+			tempY -= step;									//Do đánh số từ trên xuống và lúc đầu tempY = lastY nên mỗi lần lặp thì giảm tempY đi bằng độ chia nhỏ nhất
 		}
 
 	//Đánh số trên các trục X
@@ -199,36 +168,29 @@ void numberline(double firstX, double lastX, double firstY, double lastY, double
 				destCoord.X = i / 8;					//Tính tọa độ con trỏ dựa vào vị trí pixel được chia đoạn
 			else
 				destCoord.X = i / 8 - 1;
-			SetConsoleCursorPosition(hStdout, destCoord); //Di chuyển con trỏ
+			SetConsoleCursorPosition(hStdout, destCoord); 
 			cout << tempX;
-			tempX += spaceX;							//Đánh số từ trái sang phải nên mỗi lần lặp tăng tempX lên
+			tempX += step;							//Đánh số từ trái sang phải nên mỗi lần lặp tăng tempX lên
 		}
 }
 
 void plot(string f, double firstX, double lastX, double firstY, double lastY, double step, COLORREF funcColor) {
-	//////////////// TÙY CHỈNH  //////////////					//	//	Cận Y
-	double spaceX = step;						//	Độ chia nhỏ nhất của trục X
-	double spaceY = step;						//	Độ chia nhỏ nhất của trục Y
-	//////////////////////////////////////////
-		
-	int length = recXend - recXstart;		//Chiều dài hình chữ nhật
-	int width = recYend - recYstart;		//Chiều rộng hình chữ nhật
-	double nX = (lastX - firstX) / spaceX;	//Số đoạn trên trục X
-	double nY = (lastY - firstY) / spaceY;	//Số đoạn trên trục Y
+	double nX = (lastX - firstX) / step;	//Số đoạn trên trục X
+	double nY = (lastY - firstY) / step;	//Số đoạn trên trục Y
 	double spacePixelX = length / nX;		//Độ chia nhỏ nhất tính theo pixel của trục X
 	double spacePixelY = width / nY;		//Độ chia nhỏ nhất tính theo pixel của trục Y
 
 	//Vẽ đồ thị
 	HDC consoleDC = GetDC(consoleWindow);
-	while (!stop[1]) {
+	while (!stop) {
 		//Vẽ đồ thị hàm số 
 		double X = firstX;	//Biến hoành độ của đồ thị hàm số, khởi tạo bằng cận trái
-		double Y0, Y1 = eval(f, X), Y2 = eval(f, X);			//Biến tung độ của đồ thị hàm số
+		double Y0, Y1 = eval(f, X), Y2 = eval(f, X);			//Biến tung độ của đồ thị hàm số, dùng 3 biến để vẽ nối liền các giá trị cách xa nhau
 		double j0, j1, j2;			//Biến tung độ pixel của đồ thị
 		j1 = -Y1 * width / (lastY - firstY);
 		j1 = j1 + (recYend + firstY * width / (lastY - firstY));
 		j2 = j1;
-		double dx = (lastX - firstX) / length;
+		double dx = (lastX - firstX) / length; //Vi phân 
 		for (int i = recXstart; i <= recXend; i++) {
 			Y0 = Y1;
 			Y1 = Y2;
@@ -280,15 +242,14 @@ void plot(string f, double firstX, double lastX, double firstY, double lastY, do
 	ReleaseDC(consoleWindow, consoleDC);
 }
 
-void exitThread(thread* thread, int i) {
-	stop[i] = true;
+void exitThread(thread* thread) {
+	stop = true;
 	thread->join();
 }
 
 void plotGraph(string fs[], int n) {
 	COLORREF colors[3] = { greenColor , blueColor , redColor };
 	system("cls");
-	int i = 0;
 	double range = 4;
 	double x1 = -range, x2 = range, y1 = -range, y2 = range, step = 1, moveStep = step;
 	labelling(fs, n);
@@ -343,28 +304,27 @@ void plotGraph(string fs[], int n) {
 				break;
 			}
 			}
-			exitThread(&t1, 0);
-			exitThread(&t2, 0);
+			exitThread(&t1);
+			exitThread(&t2);
 			for (int i = 0; i < n; i++) 
-				exitThread(&a[i], 1);
+				exitThread(&a[i]);
 			for (int i = 0; i < 600; i++)
 				for (int j = 0; j < 400; j++)
 					duplicateColor[i][j] = 0;
 			system("cls");
 			labelling(fs, n);
 			numberline(x1, x2, y1, y2, step);
-			stop[1] = false;
-			stop[0] = false;
+			stop = false;
 			t1 = thread(drawHorizontal, x1, x2, y1, y2, step);
 			t2 = thread(drawVertical, x1, x2, y1, y2, step);
 			for (int i = 0; i < n; i++)
 				a[i] = thread(plot, fs[i], x1, x2, y1, y2, step, colors[i]);
 		}
 		if (c == 27) {
-			exitThread(&t1, 0);
-			exitThread(&t2, 0);
+			exitThread(&t1);
+			exitThread(&t2);
 			for (int i = 0; i < n; i++)
-				exitThread(&a[i], 1);
+				exitThread(&a[i]);
 			break;
 		}
 	}

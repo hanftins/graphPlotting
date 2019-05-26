@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <cmath>
-#include "Stack.h"
+#include "Stack(plot).h"
 
 using namespace std;
 

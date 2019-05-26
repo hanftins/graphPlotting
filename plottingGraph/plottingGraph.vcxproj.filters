@@ -32,7 +32,7 @@
     <ClInclude Include="subFunction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Stack.h">
+    <ClInclude Include="Stack%28plot%29.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

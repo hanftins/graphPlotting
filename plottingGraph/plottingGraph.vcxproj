@@ -129,7 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="evaluateAndPlot.h" />
-    <ClInclude Include="Stack.h" />
+    <ClInclude Include="Stack%28plot%29.h" />
     <ClInclude Include="subFunction.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

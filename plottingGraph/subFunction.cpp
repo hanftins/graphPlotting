@@ -62,6 +62,22 @@ void calculate2(Node<double>*& stackNumber, string subFunction) {
 		popStack(stackNumber);
 		pushStack(stackNumber, log(a));
 	}
+	if (subFunction == "sin") {
+		popStack(stackNumber);
+		pushStack(stackNumber, sin(a));
+	}
+	if (subFunction == "cos") {
+		popStack(stackNumber);
+		pushStack(stackNumber, cos(a));
+	}
+	if (subFunction == "tan") {
+		popStack(stackNumber);
+		pushStack(stackNumber, tan(a));
+	}
+	if (subFunction == "cot") {
+		popStack(stackNumber);
+		pushStack(stackNumber, cos(a)/sin(a));
+	}
 	if (subFunction[0] == 'l' && subFunction[1] == 'o' && subFunction[2] == 'g') {
 		string t;
 		for (int i = 3; i < subFunction.length(); i++)

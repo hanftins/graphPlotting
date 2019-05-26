@@ -1,18 +1,18 @@
 #include "evaluateAndPlot.h"
 
 int main() {
-	string fs[3];
-	int n;
+	string fs[3], n;
 	do {
-		cout << "How many functions do you want to plot? (max = 3): ";
-		cin >> n;
-		if (n <= 0 || n > 3)
-			cout << "Invalid option, try again!\n";
-	} while (n <= 0 || n > 3);	
+		cout << "Ban muon ve do thi cua bao nhieu ham so? (max = 3): ";
+		getline(cin, n);
+		if (n != "1" && n != "2" && n != "3")
+			cout << "So luong do thi khong hop le!\n";
+	} while (n != "1" && n != "2" && n != "3");
 	rewind(stdin);
-	for (int i = 0; i < n; i++) {
-		cout << "Input function " << i + 1 << ": ";
+	int number = n[0] - '0';
+	for (int i = 0; i < number; i++) {
+		cout << "Nhap ham f" << i + 1 << "(x): ";
 		getline(cin, fs[i]);
 	}
-	plotGraph(fs, n);
+	plotGraph(fs, number);
 }	

@@ -2,7 +2,9 @@
 
 int main() {
 	string function;
-	cout << "Nhap ham so: ";
-	cin >> function;
+	cout << "Input function: ";
+	getline(cin, function);
+	//function = "sqrt(x)";
+	//cout << eval(function, -1);
 	plotGraph(function);
-}
+}	

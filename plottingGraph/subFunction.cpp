@@ -47,3 +47,19 @@ void calculate(Node<double>*& stackNumber, char oPerator) {
 	case '^': pushStack(stackNumber, pow(number1, number2)); break;
 	}
 }
+
+void calculate2(Node<double>*& stackNumber, string subFunction) {
+	double a = topStack(stackNumber);
+	if (subFunction == "sqrt") {
+		popStack(stackNumber);
+		pushStack(stackNumber, sqrt(a));
+	}
+	if (subFunction == "abs") {
+		popStack(stackNumber);
+		pushStack(stackNumber, abs(a));
+	}
+	if (subFunction == "ln") {
+		popStack(stackNumber);
+		pushStack(stackNumber, log(a));
+	}
+}

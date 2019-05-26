@@ -11,9 +11,8 @@ double eval(string f, double x) {
 		return 1 / tan(x);
 	if (f == "e^x")
 		return exp(x);
-	if (f == "ln(x)")
-		return log(x);
 	string numStr;
+	string subFunc;
 	f += ')';
 	Node<char>* stackOperator = NULL;
 	Node<double>* stackNumber = NULL;
@@ -47,30 +46,38 @@ double eval(string f, double x) {
 								pushStack(stackNumber, (double)stringToInt(numStr));
 								numStr = "";
 							}
+							bool flag = false;
 							while (topStack(stackOperator) != '(') {
 								char oPerator = topStack(stackOperator);
 								popStack(stackOperator);
 								calculate(stackNumber, oPerator);
+								flag = true;
+							}
+							if (!flag) {
+								calculate2(stackNumber, subFunc);
+								subFunc = "";
 							}
 							popStack(stackOperator);
 						}
+						else
+							subFunc += c;
 	}
 	return topStack(stackNumber);
 }
 bool stop = false;
+COLORREF funcColor = RGB(51, 255, 51);
+HWND consoleWindow = GetConsoleWindow();
+
 void plot(string f, double firstX, double lastX, double firstY, double lastY, double step) {
-	HWND consoleWindow = GetConsoleWindow();
 	//////////////// TÙY CHỈNH  //////////////
 	int recXstart = 50;						//
 	int recYstart = 40;						//	Tọa độ đỉnh hình chữ nhật
 	int recXend = 650;						//
-	int recYend = 440;						//
-	//double firstX = -3.14, lastX = 3.14;			//	Cận X
-	//double firstY = -2, lastY = 2;			//	Cận Y
+	int recYend = 440;						//	//	Cận Y
 	double spaceX = step;						//	Độ chia nhỏ nhất của trục X
 	double spaceY = step;						//	Độ chia nhỏ nhất của trục Y
 	//////////////////////////////////////////
-
+		
 	int length = recXend - recXstart;		//Chiều dài hình chữ nhật
 	int width = recYend - recYstart;		//Chiều rộng hình chữ nhật
 	double nX = (lastX - firstX) / spaceX;	//Số đoạn trên trục X
@@ -118,24 +125,20 @@ void plot(string f, double firstX, double lastX, double firstY, double lastY, do
 		for (int i = recXstart; i <= recXend; i++) {
 			SetPixel(consoleDC, i, recYstart, recColor);			//Vẽ cạnh trên
 			SetPixel(consoleDC, i, recYend, recColor);				//Vẽ cạnh dưới
-			if ((i - recXstart) % (int)spacePixelX == 0 && (i != recXstart) && (i != recXend)) {			//Kiểm tra xem tại pixel i có được chia đoạn hay không
-				for (int j = recYstart; j <= recYend; j++)	//Các nét có độ dài bằng 3 pixel
-					SetPixel(consoleDC, i, j, greyColor);			//Vẽ nét chia đoạn trên cạnh trên
-				/*for (int j = recYend - 3; j <= recYend; j++)
-					SetPixel(consoleDC, i, j, recColor);	*/		//Vẽ nét chia đoạn trên cạnh dưới
-			}
+			if ((i - recXstart) % (int)spacePixelX == 0 && (i != recXstart) && (i != recXend)) 		//Kiểm tra xem tại pixel i có được chia đoạn hay không
+				for (int j = recYstart; j <= recYend; j++)
+					if (GetPixel(consoleDC, i, j) != funcColor)//Các nét có độ dài bằng 3 pixel
+						SetPixel(consoleDC, i, j, greyColor);			//Vẽ nét chia đoạn trên cạnh trên
 		}
 
 		//Vẽ khung hình chữ nhật theo chiều dọc
 		for (int i = recYstart; i <= recYend; i++) {
 			SetPixel(consoleDC, recXstart, i, recColor);			//Vẽ cạnh trái
 			SetPixel(consoleDC, recXend, i, recColor);				//Vẽ cạnh phải
-			if ((i - recYstart) % (int)spacePixelY == 0 && (i != recYstart) && (i != recYend)) {			//Kiểm tra xem tại pixel i có được chia đoạn hay không
-				for (int j = recXstart; j <= recXend; j++)	//Các nét có độ dài bằng 3 pixel
-					SetPixel(consoleDC, j, i, greyColor);			//Vẽ nét chia đoạn trên cạnh trái
-				/*for (int j = recXend - 3; j <= recXend; j++)
-					SetPixel(consoleDC, j, i, recColor);*/			//Vẽ nét chia đoạn trên cạnh phải
-			}
+			if ((i - recYstart) % (int)spacePixelY == 0 && (i != recYstart) && (i != recYend)) 			//Kiểm tra xem tại pixel i có được chia đoạn hay không
+				for (int j = recXstart; j <= recXend; j++)
+					if (GetPixel(consoleDC, j, i) != funcColor)//Các nét có độ dài bằng 3 pixel
+						SetPixel(consoleDC, j, i, greyColor);			//Vẽ nét chia đoạn trên cạnh trái
 		}
 
 		//Vẽ đồ thị hàm số 
@@ -145,38 +148,39 @@ void plot(string f, double firstX, double lastX, double firstY, double lastY, do
 		j1 = -Y1 * width / (lastY - firstY);
 		j1 = j1 + (recYend + firstY * width / (lastY - firstY));
 		j2 = j1;
+		double dx = (lastX - firstX) / length;
 		for (int i = recXstart; i <= recXend; i++) {
 			Y0 = Y1;
 			Y1 = Y2;
-			X += (lastX - firstX) / length;
+			X = firstX + dx * (i - (double)recXstart + 1);
 			Y2 = eval(f, X);
 			j0 = j1;
 			j1 = j2;
 			j2 = -Y2 * width / (lastY - firstY);
 			j2 = j2 + (recYend + firstY * width / (lastY - firstY));
 			if (j1 < recYend && j1 > recYstart)
-				SetPixel(consoleDC, i, (int)j1, redColor);
+				SetPixel(consoleDC, i, (int)j1, funcColor);
 			if ((int)j0 - (int)j1 >= 1 && (int)j0 - (int)j1 <= 10000)
 				for (int t = (int)j1; t <= ((int)j0 + (int)j1) / 2; t++) {
 					if (t < recYend && t > recYstart)
-						SetPixel(consoleDC, i, t, redColor);
+						SetPixel(consoleDC, i, t, funcColor);
 				}
 			else
 				if ((int)j1 - (int)j0 >= 1 && (int)j1 - (int)j0 <= 10000)
 					for (int t = (int)j1; t >= ((int)j0 + (int)j1) / 2; t--) {
 						if (t < recYend && t > recYstart)
-							SetPixel(consoleDC, i, t, redColor);
+							SetPixel(consoleDC, i, t, funcColor);
 					}
 			if ((int)j1 - (int)j2 >= 1 && (int)j1 - (int)j2 <= 10000)
 				for (int t = (int)j1; t >= ((int)j1 + (int)j2) / 2; t--) {
 					if (t < recYend && t > recYstart)
-						SetPixel(consoleDC, i, t, redColor);
+						SetPixel(consoleDC, i, t, funcColor);
 				}
 			else
 				if ((int)j2 - (int)j1 >= 1 && (int)j2 - (int)j1 <= 10000)
 					for (int t = (int)j1; t <= ((int)j1 + (int)j2) / 2; t++) {
 						if (t < recYend && t > recYstart)
-							SetPixel(consoleDC, i, t, redColor);
+							SetPixel(consoleDC, i, t, funcColor);
 					}
 		}
 	}
@@ -184,14 +188,13 @@ void plot(string f, double firstX, double lastX, double firstY, double lastY, do
 }
 
 void exitThread(thread* thread) {
-	system("cls");
 	stop = true;
 	thread->join();
 }
 
 void plotGraph(string s) {
 	int i = 0;
-	double x1 = -4, x2 = 4, y1 = -4, y2 = 4, step = 1;
+	double x1 = -4, x2 = 4, y1 = -4, y2 = 4, step = 1, moveStep = step;
 	thread a;
 	a = thread(plot, s, x1, x2, y1, y2, step);
 	while (true) {
@@ -199,23 +202,23 @@ void plotGraph(string s) {
 		if (c == 119 || c == 115 || c == 97 || c == 100 || c == 45 || c == 43) {
 			switch (c) {
 			case 119: {
-				y1 = y1 + step / 2;
-				y2 = y2 + step / 2;
+				y1 = y1 + moveStep;
+				y2 = y2 + moveStep;
 				break;
 			}
 			case 115: {
-				y1 = y1 - step / 2;
-				y2 = y2 - step / 2;
+				y1 = y1 - moveStep;
+				y2 = y2 - moveStep;
 				break;
 			}
 			case 97: {
-				x1 = x1 - step / 2;
-				x2 = x2 - step / 2;
+				x1 = x1 - moveStep;
+				x2 = x2 - moveStep;
 				break;
 			}
 			case 100: {
-				x1 = x1 + step / 2;
-				x2 = x2 + step / 2;
+				x1 = x1 + moveStep;
+				x2 = x2 + moveStep;
 				break;
 			}
 			case 45: {
@@ -225,6 +228,7 @@ void plotGraph(string s) {
 				x2 = (oldx1 + x2) / 2 + 4 * step;
 				y1 = (y1 + y2) / 2 - 4 * step;
 				y2 = (oldy1 + y2) / 2 + 4 * step;
+				moveStep = step;
 				break;
 			}
 			case 43: {
@@ -234,6 +238,7 @@ void plotGraph(string s) {
 				x2 = (oldx1 + x2) / 2 + 4 * step;
 				y1 = (y1 + y2) / 2 - 4 * step;
 				y2 = (oldy1 + y2) / 2 + 4 * step;
+				moveStep = step;
 				break;
 			}
 			}

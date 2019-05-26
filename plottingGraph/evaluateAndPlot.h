@@ -3,7 +3,6 @@
 #include <Windows.h>
 #include <conio.h>
 #include <thread>
-#include <vector>
 
 static COLORREF redColor = RGB(255, 0, 0);	//
 static COLORREF blueColor = RGB(0, 0, 255);	// Khai báo màu

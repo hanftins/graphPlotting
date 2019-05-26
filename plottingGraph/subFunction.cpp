@@ -62,4 +62,16 @@ void calculate2(Node<double>*& stackNumber, string subFunction) {
 		popStack(stackNumber);
 		pushStack(stackNumber, log(a));
 	}
+	if (subFunction[0] == 'l' && subFunction[1] == 'o' && subFunction[2] == 'g') {
+		string t;
+		for (int i = 3; i < subFunction.length(); i++)
+			t += subFunction[i];
+		int base;
+		if (t == "")
+			base = 10;
+		else
+			base = stringToInt(t);
+		popStack(stackNumber);
+		pushStack(stackNumber, log(a)/log(base));
+	}
 }

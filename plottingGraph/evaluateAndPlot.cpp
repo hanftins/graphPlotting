@@ -418,7 +418,7 @@ void deleteGraph(string fs[], string type[], int& n) {
 	}
 }
 
-void plotGraph(string fs[], int n, string type[]) {
+void plotGraph(string fs[], string type[], int n) {
 	COLORREF colors[4] = { greenColor, blueColor, redColor, yellowColor };
 	double range = 4;
 	double x1 = -range, x2 = range, y1 = -range, y2 = range, step = 1, moveStep = step;

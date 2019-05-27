@@ -5,6 +5,6 @@ int main() {
 	int n = 0;
 	addGraph(fs[0], fs[1], g[0], n);
 	if (fs[0] != "") 
-		plotGraph(fs, n, g);
+		plotGraph(fs, g, n);
 	cout << "SUCCESS!\n";
 }	

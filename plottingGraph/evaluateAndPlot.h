@@ -34,4 +34,4 @@ void plot(string f, double firstX, double lastX, double firstY, double lastY, do
 void exitThread(thread* thread);	//Hàm thoát thread	
 void addGraph(string& f1, string& f2, string& type, int &n);
 void deleteGraph(string fs[], string type[], int& n);
-void plotGraph(string fs[], int n, string type[]);	//Hàm xử lí vấn đề di chuyển và phóng to, nhỏ của đồ thị
+void plotGraph(string fs[], string type[], int n);	//Hàm xử lí vấn đề di chuyển và phóng to, nhỏ của đồ thị

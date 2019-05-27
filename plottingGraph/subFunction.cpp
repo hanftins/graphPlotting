@@ -35,59 +35,34 @@ int prior(char a, char b) {
 }
 
 void calculate(Node<double>*& stackNumber, char oPerator) {
-	double number2 = topStack(stackNumber);
-	popStack(stackNumber);
-	double number1 = topStack(stackNumber);
-	popStack(stackNumber);
-	switch (oPerator) {
-	case '+': pushStack(stackNumber, number1 + number2); break;
-	case '-': pushStack(stackNumber, number1 - number2); break;
-	case '*': pushStack(stackNumber, number1 * number2); break;
-	case '/': pushStack(stackNumber, number1 / number2); break;
-	case '^': pushStack(stackNumber, pow(number1, number2)); break;
-	}
-}
-
-void calculate2(Node<double>*& stackNumber, string subFunction) {
-	double a = topStack(stackNumber);
-	if (subFunction == "sqrt") {
+	if (oPerator == '+' || oPerator == '-' || oPerator == '*' || oPerator == '/' || oPerator == '^' || oPerator == '~') {
+		double number2 = topStack(stackNumber);
 		popStack(stackNumber);
-		pushStack(stackNumber, sqrt(a));
+		double number1;
+		if (emptyStack(stackNumber))
+			number1 = 0;
+		else {
+			number1 = topStack(stackNumber);
+			popStack(stackNumber);
+		}
+		switch (oPerator) {
+		case '+': pushStack(stackNumber, number1 + number2); break;
+		case '-': pushStack(stackNumber, number1 - number2); break;
+		case '*': pushStack(stackNumber, number1 * number2); break;
+		case '/': pushStack(stackNumber, number1 / number2); break;
+		case '^': pushStack(stackNumber, pow(number1, number2)); break;
+		case '~': pushStack(stackNumber, log(number2) / log(number1)); break;
+		}
 	}
-	if (subFunction == "abs") {
+	else {
+		double x = topStack(stackNumber);
 		popStack(stackNumber);
-		pushStack(stackNumber, abs(a));
-	}
-	if (subFunction == "ln") {
-		popStack(stackNumber);
-		pushStack(stackNumber, log(a));
-	}
-	if (subFunction == "sin") {
-		popStack(stackNumber);
-		pushStack(stackNumber, sin(a));
-	}
-	if (subFunction == "cos") {
-		popStack(stackNumber);
-		pushStack(stackNumber, cos(a));
-	}
-	if (subFunction == "tan") {
-		popStack(stackNumber);
-		pushStack(stackNumber, tan(a));
-	}
-	if (subFunction == "cot") {
-		popStack(stackNumber);
-		pushStack(stackNumber, cos(a)/sin(a));
-	}
-	if (subFunction[0] == 'l' && subFunction[1] == 'o' && subFunction[2] == 'g') {
-		string t;
-		for (int i = 3; i < subFunction.length(); i++)
-			t += subFunction[i];
-		int base;
-		if (t == "")
-			base = 10;
-		else
-			base = stringToInt(t);
-		popStack(stackNumber);
-		pushStack(stackNumber, log(a)/log(base));
+		switch (oPerator) {
+		case '!': pushStack(stackNumber, sqrt(x)); break;
+		case '@': pushStack(stackNumber, sin(x)); break;
+		case '#': pushStack(stackNumber, cos(x)); break;
+		case '$': pushStack(stackNumber, tan(x)); break;
+		case '%': pushStack(stackNumber, cos(x) / sin(x)); break;
+		}
 	}
 }

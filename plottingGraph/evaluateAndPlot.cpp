@@ -229,52 +229,97 @@ void plot(string f, double firstX, double lastX, double firstY, double lastY, do
 	HDC consoleDC = GetDC(consoleWindow);
 	while (!stop) {
 		//Vẽ đồ thị hàm số 
-		double X = firstX;	//Biến hoành độ của đồ thị hàm số, khởi tạo bằng cận trái
-		double Y0, Y1 = eval(f, X), Y2 = eval(f, X);			//Biến tung độ của đồ thị hàm số, dùng 3 biến để vẽ nối liền các giá trị cách xa nhau
+		double X0, X1, X2;	//Biến hoành độ của đồ thị hàm số, khởi tạo bằng cận trái
+		double Y0, Y1, Y2;		//Biến tung độ của đồ thị hàm số, dùng 3 biến để vẽ nối liền các giá trị cách xa nhau
 		double j0, j1, j2;			//Biến tung độ pixel của đồ thị
-		j1 = -Y1 * width / (lastY - firstY);
-		j1 = j1 + (recYend + firstY * width / (lastY - firstY));
-		j2 = j1;
 		double dx = (lastX - firstX) / length; //Vi phân 
 
-		for (int i = recXstart; i <= recXend; i++) {
-			Y0 = Y1;
-			Y1 = Y2;
-			X = firstX + dx * (i - (double)recXstart + 1);
-			Y2 = eval(f, X);
-			j0 = j1;
-			j1 = j2;
+		for (int i = recXstart + 1; i < recXend; i++) {
+			X0 = firstX + dx * (i - (double)recXstart - 1);
+			X1 = firstX + dx * (i - (double)recXstart);
+			X2 = firstX + dx * (i - (double)recXstart + 1);
+			Y0 = eval(f, X0);
+			Y1 = eval(f, X1);
+			Y2 = eval(f, X2);
+			j0 = -Y0 * width / (lastY - firstY);
+			j0 = j0 + (recYend + firstY * width / (lastY - firstY));
+			j1 = -Y1 * width / (lastY - firstY);
+			j1 = j1 + (recYend + firstY * width / (lastY - firstY));
 			j2 = -Y2 * width / (lastY - firstY);
 			j2 = j2 + (recYend + firstY * width / (lastY - firstY));
+
 			if (j1 < recYend && j1 > recYstart) {
 				SetPixel(consoleDC, i, (int)j1, funcColor);
 				duplicateColor[i - recXstart][(int)j1 - recYstart] = 1;
 			}
-			if ((int)j0 - (int)j1 >= 1 && (int)j0 - (int)j1 <= 10000)	//j0 > j1
-				for (int t = (int)j1; t <= ((int)j0 + (int)j1) / 2; t++) {
+			else
+				continue;
+
+			if ((j2 <= recYstart || j2 - j0 >= 1) && Y1 > Y0) {
+				for (int t = (int)(j1 + j0) / 2; t > recYstart; t--) {
+					if (t < recYend && t > recYstart) {
+						SetPixel(consoleDC, i, t, funcColor);
+						duplicateColor[i - recXstart][t - recYstart] = 1;
+					}
+				}
+				continue;
+			}
+
+			if ((j2 >= recYend || j0 - j2 >= 1) && Y1 < Y0) {
+				for (int t = (int)(j1 + j0) / 2; t < recYend; t++) {
+					if (t < recYend && t > recYstart) {
+						SetPixel(consoleDC, i, t, funcColor);
+						duplicateColor[i - recXstart][t - recYstart] = 1;
+					}
+				}
+				continue;
+			}
+
+			if ((j0 <= recYstart || j0 - j2 >= 1) && Y1 > Y2) {
+				for (int t = (int)(j1 + j2) / 2; t > recYstart; t--) {
+					if (t < recYend && t > recYstart) {
+						SetPixel(consoleDC, i, t, funcColor);
+						duplicateColor[i - recXstart][t - recYstart] = 1;
+					}
+				}
+				continue;
+			}
+
+			if ((j0 >= recYend ||j2 - j0 >= 1) && Y1 < Y2) {
+				for (int t = (int)(j1 + j2) / 2; t < recYend; t++) {
+					if (t < recYend && t > recYstart) {
+						SetPixel(consoleDC, i, t, funcColor);
+						duplicateColor[i - recXstart][t - recYstart] = 1;
+					}
+				}
+				continue;
+			}
+
+			if (j0 > j1 && j0 - j1 <= 500)	//j0 > j1
+				for (int t = (int)j1; t <= (j0 + j1) / 2; t++) {
 					if (t < recYend && t > recYstart) {
 						SetPixel(consoleDC, i, t, funcColor);
 						duplicateColor[i - recXstart][t - recYstart] = 1;
 					}	
 				}
 			else
-				if ((int)j1 - (int)j0 >= 1 && (int)j1 - (int)j0 <= 10000)	//j1 > j0
-					for (int t = (int)j1; t >= ((int)j0 + (int)j1) / 2; t--) {
+				if (j1 > j0 && j1 - j0 <= 500)	//j1 > j0
+					for (int t = (int)j1; t >= (j0 + j1) / 2; t--) {
 						if (t < recYend && t > recYstart) {
 							SetPixel(consoleDC, i, t, funcColor);
 							duplicateColor[i - recXstart][t - recYstart] = 1;
 						}
 					}
-			if ((int)j1 - (int)j2 >= 1 && (int)j1 - (int)j2 <= 10000)	//j1 > j2
-				for (int t = (int)j1; t >= ((int)j1 + (int)j2) / 2; t--) {
+			if (j1 > j2 && j1 - j2 <= 500)	//j1 > j2
+				for (int t = (int)j1; t >= (j1 + j2) / 2; t--) {
 					if (t < recYend && t > recYstart) {
 						SetPixel(consoleDC, i, t, funcColor);
 						duplicateColor[i - recXstart][t - recYstart] = 1;
 					}
 				}
 			else
-				if ((int)j2 - (int)j1 >= 1 && (int)j2 - (int)j1 <= 10000)	//j2 > j1
-					for (int t = (int)j1; t <= ((int)j1 + (int)j2) / 2; t++) {
+				if (j2 > j1 && j2 - j1 <= 500)	//j2 > j1
+					for (int t = (int)j1; t <= (j1 + j2) / 2; t++) {
 						if (t < recYend && t > recYstart) {
 							SetPixel(consoleDC, i, t, funcColor);
 							duplicateColor[i - recXstart][t - recYstart] = 1;

@@ -295,7 +295,7 @@ void plot(string f, double firstX, double lastX, double firstY, double lastY, do
 				continue;
 			}
 
-			if (j0 > j1 && j0 - j1 <= 500)	//j0 > j1
+			if (j0 > j1 && j0 - j1 <= 100)	//j0 > j1
 				for (int t = (int)j1; t <= (j0 + j1) / 2; t++) {
 					if (t < recYend && t > recYstart) {
 						SetPixel(consoleDC, i, t, funcColor);
@@ -303,14 +303,14 @@ void plot(string f, double firstX, double lastX, double firstY, double lastY, do
 					}	
 				}
 			else
-				if (j1 > j0 && j1 - j0 <= 500)	//j1 > j0
+				if (j1 > j0 && j1 - j0 <= 100)	//j1 > j0
 					for (int t = (int)j1; t >= (j0 + j1) / 2; t--) {
 						if (t < recYend && t > recYstart) {
 							SetPixel(consoleDC, i, t, funcColor);
 							duplicateColor[i - recXstart][t - recYstart] = 1;
 						}
 					}
-			if (j1 > j2 && j1 - j2 <= 500)	//j1 > j2
+			if (j1 > j2 && j1 - j2 <= 100)	//j1 > j2
 				for (int t = (int)j1; t >= (j1 + j2) / 2; t--) {
 					if (t < recYend && t > recYstart) {
 						SetPixel(consoleDC, i, t, funcColor);
@@ -318,7 +318,7 @@ void plot(string f, double firstX, double lastX, double firstY, double lastY, do
 					}
 				}
 			else
-				if (j2 > j1 && j2 - j1 <= 500)	//j2 > j1
+				if (j2 > j1 && j2 - j1 <= 100)	//j2 > j1
 					for (int t = (int)j1; t <= (j1 + j2) / 2; t++) {
 						if (t < recYend && t > recYstart) {
 							SetPixel(consoleDC, i, t, funcColor);

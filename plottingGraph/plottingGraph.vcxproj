@@ -123,14 +123,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="evaluateAndPlot.cpp" />
+    <ClCompile Include="plotting.cpp" />
     <ClCompile Include="Source.cpp" />
-    <ClCompile Include="subFunction.cpp" />
+    <ClCompile Include="evaluating.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="evaluateAndPlot.h" />
+    <ClInclude Include="plotting.h" />
     <ClInclude Include="Stack%28plot%29.h" />
-    <ClInclude Include="subFunction.h" />
+    <ClInclude Include="evaluating.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

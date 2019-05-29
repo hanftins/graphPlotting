@@ -1,95 +1,4 @@
-﻿#include "evaluateAndPlot.h"
-
-double eval(string f, double x) {	//Hàm tính giá trị hàm số, sử dụng stack và thuật toán Ký pháp Ba Lan 
-	if (f == "e^x")
-		return exp(x);
-	string numStr;
-	string subFunc;
-	f += ')';
-	Node<char>* stackOperator = NULL;
-	Node<double>* stackNumber = NULL;
-	pushStack(stackOperator, '(');
-	bool isLog = false;
-	for (int i = 0; i < (int)f.length(); i++) {
-		char c = f[i];
-		if (subFunc == "sqrt" || subFunc == "sin" || subFunc == "cos" || subFunc == "tan" || subFunc == "cot" || subFunc == "ln")
-			if (c == '(') {
-				pushStack(stackOperator, c);
-				if (subFunc == "sqrt")
-					pushStack(stackOperator, '!');
-				if (subFunc == "sin")
-					pushStack(stackOperator, '@');
-				if (subFunc == "cos")
-					pushStack(stackOperator, '#');
-				if (subFunc == "tan")
-					pushStack(stackOperator, '$');
-				if (subFunc == "cot")
-					pushStack(stackOperator, '%');
-				if (subFunc == "ln")
-					pushStack(stackOperator, '&');
-				subFunc = "";
-				continue;
-			}
-		if (isLog) 
-			if (c == '(') {
-				if (numStr != "") {
-					pushStack(stackNumber, (double)stringToInt(numStr));
-					numStr = "";
-				}
-				else
-					pushStack(stackNumber, (double)10);
-				pushStack(stackOperator, c);
-				pushStack(stackOperator, '~');
-				isLog = false;
-				subFunc = "";
-				continue;
-			}	
-		if (c == 'x' || c == 'X')
-			pushStack(stackNumber, x);
-		else
-			if (c >= '0' && c <= '9')
-				numStr += c;
-			else
-				if (c == '(')
-					pushStack(stackOperator, c);
-				else
-					if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^') {
-						if (numStr != "") {
-							pushStack(stackNumber, (double)stringToInt(numStr));
-							numStr = "";
-						}
-						while (prior(topStack(stackOperator), c) == 1) {
-							char oPerator = topStack(stackOperator);
-							popStack(stackOperator);
-							calculate(stackNumber, oPerator);
-						}
-						pushStack(stackOperator, c);
-					}
-					else
-						if (c == ')') {
-							if (numStr != "") {
-								pushStack(stackNumber, (double)stringToInt(numStr));
-								numStr = "";
-							}
-							bool flag = false;
-							while (topStack(stackOperator) != '(') {
-								char oPerator = topStack(stackOperator);
-								popStack(stackOperator);
-								calculate(stackNumber, oPerator);
-								flag = true;
-							}
-							popStack(stackOperator);
-						}
-						else 
-							if (c != ' ') {
-								subFunc += c;
-								if (subFunc == "log")
-									isLog = true;
-							}				
-	}
-	return topStack(stackNumber);
-}
-
+﻿#include "plotting.h"
 
 void resetColor(bool a[length + 1][width + 1]) {
 	for (int i = 0; i <= length; i++)
@@ -229,28 +138,30 @@ void plot(string f, double firstX, double lastX, double firstY, double lastY, do
 	HDC consoleDC = GetDC(consoleWindow);
 	while (!stop) {
 		//Vẽ đồ thị hàm số 
-		double X0, X1, X2;	//Biến hoành độ của đồ thị hàm số, khởi tạo bằng cận trái
+		double X0, X1, X2;		//Biến hoành độ của đồ thị hàm số, khởi tạo bằng cận trái
 		double Y0, Y1, Y2;		//Biến tung độ của đồ thị hàm số, dùng 3 biến để vẽ nối liền các giá trị cách xa nhau
-		double j0, j1, j2;			//Biến tung độ pixel của đồ thị
+		double j0, j1, j2;		//Biến tung độ pixel của đồ thị
 		double dx = (lastX - firstX) / length; //Vi phân 
 
-		for (int i = recXstart + 1; i < recXend; i++) {
-			X0 = firstX + dx * (i - (double)recXstart - 1);
+		for (int i = recXstart; i < recXend; i++) {
+			X0 = firstX + dx * (i - (double)recXstart - 1);	
 			X1 = firstX + dx * (i - (double)recXstart);
 			X2 = firstX + dx * (i - (double)recXstart + 1);
 			Y0 = eval(f, X0);
 			Y1 = eval(f, X1);
 			Y2 = eval(f, X2);
 			j0 = -Y0 * width / (lastY - firstY);
-			j0 = j0 + (recYend + firstY * width / (lastY - firstY));
+			j0 = round(j0 + (recYend + firstY * width / (lastY - firstY)));
 			j1 = -Y1 * width / (lastY - firstY);
-			j1 = j1 + (recYend + firstY * width / (lastY - firstY));
+			j1 = round(j1 + (recYend + firstY * width / (lastY - firstY)));
 			j2 = -Y2 * width / (lastY - firstY);
-			j2 = j2 + (recYend + firstY * width / (lastY - firstY));
+			j2 = round(j2 + (recYend + firstY * width / (lastY - firstY)));
 
-			if (j1 < recYend && j1 > recYstart) {
+			if (j1 < recYend && j1 > recYstart) {	
 				SetPixel(consoleDC, i, (int)j1, funcColor);
 				duplicateColor[i - recXstart][(int)j1 - recYstart] = 1;
+				SetPixel(consoleDC, i, (int)j1+1, funcColor);
+				duplicateColor[i - recXstart][(int)j1+1 - recYstart] = 1;
 			}
 			else
 				continue;
@@ -572,4 +483,12 @@ step1:
 				return;
 		}
 	}
+}
+
+void myGraph() {
+	string fs[8], g[8];
+	int n = 0;
+	addGraph(fs[0], fs[1], g[0], n);
+	if (fs[0] != "")
+		plotGraph(fs, g, n);
 }

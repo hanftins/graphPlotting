@@ -18,21 +18,21 @@
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="evaluateAndPlot.cpp">
+    <ClCompile Include="plotting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="subFunction.cpp">
+    <ClCompile Include="evaluating.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="evaluateAndPlot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="subFunction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Stack%28plot%29.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plotting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="evaluating.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
